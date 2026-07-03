@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+model Task {
+  id            String       @id @default(cuid())
+  title         String
+  subject       String?      // "Computer Science", "Networking", etc.
+  description   String?      // full description, shown in Full Task Details
+  dueDate       DateTime?
+  priority      String       @default("normal") // "high" | "normal" | "low"
+  source        String       @default("manual")  // "gcr" | "manual"
+  taskType      String       @default("study")   // "study" | "creative"
+  status        String       @default("pending")  // "pending" | "in_progress" | "done"
+  scheduledFor  DateTime?
+  createdAt     DateTime     @default(now())
+  actionSteps   ActionStep[]
+  sessions      Session[]
+}
+
+model ActionStep {
+  id            String   @id @default(cuid())
+  task          Task     @relation(fields: [taskId], references: [id])
+  taskId        String
+  content       String   // "Implement the insert function for BST"
+  estimateMin   Int?
+  order         Int      // 1, 2, 3...
+  completed     Boolean  @default(false)
+  isAiSuggested Boolean  @default(false) // marks the "AI suggested first step"
+}
+
+model Session {
+  id           String    @id @default(cuid())
+  task         Task      @relation(fields: [taskId], references: [id])
+  taskId       String
+  startedAt    DateTime  @default(now())
+  endedAt      DateTime?
+  durationSec  Int?
+  mode         String    @default("study") // "study" | "creative"
+  isShared     Boolean   @default(false)
+  friendName   String?   // stubbed for demo, no real 2nd user needed
+}
+
+model Streak {
+  id            String    @id @default(cuid())
+  currentCount  Int       @default(0)
+  lastActiveDay DateTime?
+}
+
+model Insight {
+  id          String   @id @default(cuid())
+  content     String
+  type        String   // "pattern" | "looking_ahead"
+  createdAt   DateTime @default(now())
+  dismissed   Boolean  @default(false)
+}
