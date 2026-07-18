@@ -48,6 +48,11 @@ export default function SyncOnboarding() {
     runSync();
   }, []);
 
+  const finishOnboarding = async () => {
+    await fetch("/api/onboarding/complete", { method: "POST" });
+    router.push("/home");
+  };
+
   if (status === "loading") {
     return (
       <main className="min-h-screen flex flex-col items-center justify-center bg-[#FBF9F5] px-6">
@@ -76,12 +81,12 @@ export default function SyncOnboarding() {
         >
           Try again
         </button>
-        <a
-          href="/add"
+        <button
+          onClick={finishOnboarding}
           className="w-full max-w-xs border border-[#1B2A4A] text-[#1B2A4A] py-3 rounded-xl font-medium text-sm text-center"
         >
           Add deadlines manually
-        </a>
+        </button>
       </main>
     );
   }
@@ -117,7 +122,7 @@ export default function SyncOnboarding() {
         </div>
 
         <button
-          onClick={() => router.refresh()}
+          onClick={finishOnboarding}
           className="w-full bg-[#1B2A4A] text-white py-3 rounded-xl font-medium text-sm"
         >
           Show me my week

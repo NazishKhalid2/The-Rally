@@ -1,13 +1,14 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import ConnectScreen from "./components/ConnectScreen";
+import { authOptions } from "@/lib/auth";
+import LandingScreen from "./components/LandingScreen";
 
-export default async function HomePage() {
-  const session = await getServerSession();
+export default async function RootPage() {
+  const session = await getServerSession(authOptions);
 
-  if (!session) {
-    return <ConnectScreen />;
+  if (session) {
+    redirect("/home");
   }
 
-  redirect("/home");
+  return <LandingScreen />;
 }
